@@ -107,37 +107,44 @@ export function calculateStats(input: DailyInput): Stats {
 
   // Sleep
   if (sleep >= 7 && sleep <= 9) {
-    stats.energy += 10
-    stats.focus += 5
+    stats.energy += 15
+    stats.focus += 10
   } else if (sleep < 5) {
-    stats.energy -= 15
-    stats.focus -= 10
+    stats.energy -= 20
+    stats.focus -= 15
   } else if (sleep > 10) {
     stats.energy -= 5
   }
 
   // Screen time
-  if (screen < 1) stats.focus += 10
+  if (screen < 2) stats.focus += 15
+  else if (screen <= 4) stats.focus += 5
+  else if (screen > 6) stats.focus -= 15
   else if (screen > 4) stats.focus -= 10
 
   // Exercise
   if (exercise) {
-    stats.health += 10
-    stats.energy += 5
+    stats.health += 15
+    stats.energy += 10
+    stats.resilience += 5
   }
 
   // Stress
   if (stress >= 4) {
-    stats.focus -= 10
-    stats.health -= 5
+    stats.focus -= 15
+    stats.health -= 10
+    stats.resilience -= 5
+  } else if (stress <= 1) {
+    stats.resilience += 10
   }
 
   // Resilience
   if (sleep >= 7 && exercise) stats.resilience += 10
-  if (stress >= 4 && sleep < 6) stats.resilience -= 10
+  if (stress >= 4 && sleep < 6) stats.resilience -= 15
 
   // Water
-  if (water < 2) stats.energy -= 5
+  if (water < 2) stats.energy -= 10
+  else if (water >= 4) stats.energy += 10
   else if (water >= 3) stats.energy += 5
 
   // Clamp
@@ -154,13 +161,13 @@ export function determineEffects(stats: Stats): Effect[] {
   const effects: Effect[] = []
 
   if (stats.energy < 40) effects.push("fatigue")
-  if (stats.energy > 70) effects.push("high_energy")
+  if (stats.energy >= 65) effects.push("high_energy")
   if (stats.focus < 40) effects.push("low_focus")
-  if (stats.focus > 70) effects.push("high_focus")
+  if (stats.focus >= 60) effects.push("high_focus")
   if (stats.health < 40) effects.push("burnout_risk")
-  if (stats.health > 70) effects.push("good_health")
+  if (stats.health >= 60) effects.push("good_health")
   if (stats.resilience < 40) effects.push("low_resilience")
-  if (stats.resilience > 70) effects.push("high_resilience")
+  if (stats.resilience >= 60) effects.push("high_resilience")
 
   return effects
 }
@@ -220,9 +227,9 @@ export const QUEST_POOL: Quest[] = [
 
 function detectWeakStats(stats: Stats): string[] {
   const weak: string[] = []
-  if (stats.energy < 40) weak.push("energy")
-  if (stats.focus < 40) weak.push("focus")
-  if (stats.resilience < 40) weak.push("resilience")
+  if (stats.energy < 45) weak.push("energy")
+  if (stats.focus < 45) weak.push("focus")
+  if (stats.resilience < 45) weak.push("resilience")
   return weak
 }
 
