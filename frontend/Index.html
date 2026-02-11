@@ -179,5 +179,50 @@ if ("serviceWorker" in navigator) {
     .then(() => console.log("Service Worker Registered"));
 }
 </script>
-</body>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // Your Web App's Firebase Configuration (Found in Project Settings)
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "studio-5051566130-a3c45.firebaseapp.com",
+    projectId: "studio-5051566130-a3c45",
+    databaseURL: "https://studio-5051566130-a3c45-default-rtdb.firebaseio.com/",
+    storageBucket: "studio-5051566130-a3c45.appspot.com",
+    messagingSenderId: "102429929587",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Attach login logic to the button
+  document.querySelector('.google').addEventListener('click', async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Send Google data to your Flask Backend
+      const response = await fetch('http://127.0.0.1:5000/api/google-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email,
+          name: user.displayName
+        })
+      });
+
+      const data = await response.json();
+      if (data.status === 'success') {
+        localStorage.setItem('userId', data.user_id);
+        window.location.href = 'dashboard.html'; // Move to game screen
+      }
+    } catch (error) {
+      console.error("Auth Error:", error.message);
+      alert("Google Login Failed: " + error.message);
+    }
+  });
+</script></body>
 </html>

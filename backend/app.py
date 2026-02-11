@@ -78,5 +78,34 @@ def login():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
     
+@app.route('/api/google-auth', methods=['POST'])
+def google_auth():
+    try:
+        data = request.json
+        user_id = data['email'].replace('.', '_')
+        
+        # Check if the user already exists to avoid overwriting progress
+        user_exists = db_ref.child('users').child(user_id).get()
+        
+        if not user_exists:
+            # 1. Auth Table: Link Google account
+            db_ref.child('users').child(user_id).set({
+                "full_name": data.get('name', 'New Player'),
+                "email": data['email'],
+                "auth_provider": "google"
+            })
+            # 2. Progress Table: Seed initial game stats
+            db_ref.child('user_progress').child(user_id).set({
+                "stats": BASE_STATS,
+                "xp": {"level": 1, "total_xp": 0, "xp_for_next_level": 100},
+                "completed_tasks_today_count": 0
+            })
+            # 3. Profile Table: Mark profile as needing setup
+            db_ref.child('profiles').child(user_id).set({"has_setup_profile": False})
+            
+        return jsonify({"status": "success", "user_id": user_id})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+    
 if __name__ == "__main__":
     app.run(debug=True)
