@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard – RESPAWN</title>
+
+<style>
+
+/* ================= VIDEO BACKGROUND ================= */
+#bgVideo{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:-10;
+  pointer-events:none;
+}
+
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  color:#f8fafc;
+  background:#022c22;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.55);
+  z-index:-5;
+}
+
+/* ================= HEADER ================= */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 24px;
+  background:#065f46;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+
+.btn{
+  border:none;
+  border-radius:8px;
+  padding:8px 12px;
+  background:white;
+  color:#065f46;
+  cursor:pointer;
+}
+
+/* ================= MENU ================= */
+.menu-icon{
+  font-size:26px;
+  cursor:pointer;
+}
+
+.side-menu{
+  position:fixed;
+  top:70px;
+  right:24px;
+  background:white;
+  padding:16px 20px;
+  border-radius:14px;
+  display:none;
+  z-index:50;
+}
+
+.side-menu a{
+  display:block;
+  padding:10px 4px;
+  color:#065f46;
+  text-decoration:none;
+}
+
+/* ================= PROFILE MINI ================= */
+.profileMini{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  margin:10px;
+  cursor:pointer;
+  z-index:5;
+  position:relative;
+}
+
+.profileMini img{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  border:3px solid #4ade80;
+  object-fit:contain;
+  background:#022c22;
+  padding:3px;
+}
+
+.xpCard{
+  margin-top:6px;
+  background:#065f46;
+  padding:8px 12px;
+  border-radius:16px;
+  width:200px;
+  border:2px solid #4ade80;
+}
+
+.xpRow{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+}
+
+.xpBar{
+  height:8px;
+  background:#022c22;
+  border-radius:10px;
+}
+
+.xpFill{
+  height:100%;
+  background:#22c55e;
+  border-radius:10px;
+  transition:.4s;
+}
+
+/* ================= MAIN ================= */
+.container{
+  padding:12px;
+  max-width:1000px;
+  margin:auto;
+}
+
+.heroCard{
+  background:rgba(0,0,0,0.55);
+  border-radius:14px;
+  padding:16px;
+  text-align:center;
+}
+
+.avatar{
+  width:170px;
+  height:170px;
+  object-fit:contain;
+}
+
+.flexRow{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.panel{
+  background:rgba(0,0,0,0.55);
+  border-radius:12px;
+  padding:10px;
+  flex:1;
+  min-width:260px;
+}
+
+.bar{height:8px;background:#022c22;border-radius:8px;}
+.fill{height:100%;background:#4ade80;}
+
+.row{display:flex;gap:6px;flex-wrap:wrap;}
+
+.tag{
+  padding:6px 10px;
+  border-radius:10px;
+  background:#022c22;
+  border:1px solid #4ade80;
+  font-size:13px;
+}
+
+/* ================= PROFILE MODAL ================= */
+#profileModal{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+}
+
+.card{
+  background:#065f46;
+  width:90%;
+  max-width:460px;
+  border-radius:14px;
+  padding:20px;
+}
+
+.field{
+  margin:10px 0;
+}
+
+.field input,
+.field select{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+}
+
+.avatarGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.avatarGrid img{
+  width:70px;height:70px;
+  border-radius:50%;
+  cursor:pointer;
+  background:#022c22;
+  padding:4px;
+  border:3px solid transparent;
+}
+
+.selected{
+  border-color:#4ade80;
+  box-shadow:0 0 10px #4ade80;
+}
+
+.saveBtn{
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:white;
+  color:#065f46;
+  cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<video id="bgVideo" autoplay muted loop playsinline></video>
+
+<div class="header">
+  <div>RESPAWN</div>
+  <div style="display:flex;gap:12px;">
+    <button class="btn" onclick="logout()">Logout</button>
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+  </div>
+</div>
+
+<div class="side-menu" id="menu">
+  <a href="stats.html">Home</a>
+  <a href="quests.html">Quests</a>
+  <a href="calendar_boss.html">Calendar & Boss</a>
+  <a href="work.html">Work</a>
+</div>
+
+<div class="profileMini" onclick="openProfile()">
+  <img id="miniAv">
+  <div>
+    <div id="miniName"></div>
+    <div class="xpCard">
+      <div class="xpRow">
+        <span id="levelTxt"></span>
+        <span id="xpFraction"></span>
+      </div>
+      <div class="xpBar">
+        <div class="xpFill" id="xpFill"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="heroCard">
+    <img id="av" class="avatar">
+    <div id="moodTxt"></div>
+  </div>
+
+  <div class="flexRow">
+    <div class="panel">
+      <b>✨ Buffs</b>
+      <div id="buffBox" class="row"></div>
+    </div>
+
+    <div class="panel">
+      <b>📊 Stats</b><br>
+      Energy <span id="eTxt"></span>
+      <div class="bar"><div class="fill" id="eBar"></div></div>
+
+      Health <span id="hTxt"></span>
+      <div class="bar"><div class="fill" id="hBar"></div></div>
+
+      Focus <span id="fTxt"></span>
+      <div class="bar"><div class="fill" id="fBar"></div></div>
+
+      Resilience <span id="rTxt"></span>
+      <div class="bar"><div class="fill" id="rBar"></div></div>
+    </div>
+
+    <div class="panel">
+      <b>⚠️ Debuffs</b>
+      <div id="debuffBox" class="row"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div id="profileModal" onclick="closeOutside(event)">
+<div class="card">
+
+<h3>Player Profile</h3>
+
+<div style="text-align:center">
+<img id="pAv" style="width:90px;height:90px;border-radius:50%">
+</div>
+
+<div class="field">
+<label>Username</label>
+<input id="uName">
+</div>
+
+<div class="field">
+<label>Email</label>
+<input id="uEmail">
+</div>
+
+<div class="field">
+<label>Gender</label>
+<select id="uGender">
+<option>Male</option>
+<option>Female</option>
+</select>
+</div>
+
+<label>Choose Avatar</label>
+<div class="avatarGrid" id="grid"></div>
+
+<button class="saveBtn" onclick="saveProfile()">Save</button>
+
+</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+let profile = JSON.parse(localStorage.getItem('profile')||'{}');
+const input = JSON.parse(localStorage.getItem('dailyInputs')||'{}');
+const xpData = JSON.parse(localStorage.getItem('xpData'))||{xp:0,level:1,nextLevelXp:100};
+
+function path(v){
+  return '../assets/images/' + v;
+}
+
+function getBaseAvatar(a){
+  if(!a) return "m1";
+  return a.replace(".png","").split("-")[0];
+}
+
+let base = getBaseAvatar(profile.avatar);
+
+miniName.innerText = profile.username || 'Player';
+miniAv.src = path(base + '-normal.png');
+
+/* XP */
+levelTxt.innerText='Level '+xpData.level;
+xpFraction.innerText=xpData.xp+' / '+xpData.nextLevelXp+' XP';
+xpFill.style.width=(xpData.xp/xpData.nextLevelXp*100)+'%';
+
+/* Stats */
+let stats={energy:50,health:50,focus:50,resilience:50};
+if(input.sleep>=7) stats.energy+=10;
+if(input.sleep<5) stats.energy-=15;
+if(input.stress>=4){stats.focus-=10;stats.health-=5;}
+if(input.water>=3) stats.energy+=5;
+if(input.exercise){stats.health+=10;stats.resilience+=10;}
+
+for(let k in stats) stats[k]=Math.max(0,Math.min(100,stats[k]));
+
+let mood='Normal';
+if(input.stress>=4 || stats.health<40) mood='Stressed';
+else if(stats.energy>65) mood='Energetic';
+else if(stats.energy<45) mood='Tired';
+
+moodTxt.innerText='Mood: '+mood;
+av.src = path(base + '-' + mood.toLowerCase() + '.png');
+
+/* Video switch */
+const video = document.getElementById("bgVideo");
+let videoPath="../assets/videos/cloudy.mp4";
+if(mood==="Energetic") videoPath="../assets/videos/sunny.mp4";
+if(mood==="Tired") videoPath="../assets/videos/night.mp4";
+if(mood==="Stressed") videoPath="../assets/videos/rain.mp4";
+video.src = videoPath;
+
+/* Bars */
+function setBar(id,val){
+ document.getElementById(id).style.width=val+'%';
+ document.getElementById(id.replace('Bar','Txt')).innerText=val+'%';
+}
+setBar('eBar',stats.energy);
+setBar('hBar',stats.health);
+setBar('fBar',stats.focus);
+setBar('rBar',stats.resilience);
+
+/* Menu */
+window.toggleMenu=function(){
+ const m=document.getElementById("menu");
+ m.style.display=m.style.display==="block"?"none":"block";
+};
+
+/* Profile */
+window.openProfile=function(){
+ profileModal.style.display='flex';
+ uName.value=profile.username||'';
+ uEmail.value=profile.email||'';
+ uGender.value=profile.gender||'Male';
+ pAv.src=path(base+'-normal.png');
+
+ grid.innerHTML='';
+ let list=['m1','m2','m3','m4','f1','f2','f3','f4'];
+
+ list.forEach(v=>{
+  let img=document.createElement('img');
+  img.src=path(v+'-normal.png');
+  if(base===v) img.classList.add('selected');
+
+  img.onclick=()=>{
+   document.querySelectorAll('.avatarGrid img')
+     .forEach(i=>i.classList.remove('selected'));
+   img.classList.add('selected');
+   profile.avatar=v+'-normal.png';
+   base=v;
+   pAv.src=img.src;
+  };
+
+  grid.appendChild(img);
+ });
+};
+
+window.saveProfile=function(){
+ profile.username=uName.value;
+ profile.email=uEmail.value;
+ profile.gender=uGender.value;
+ localStorage.setItem('profile',JSON.stringify(profile));
+ location.reload();
+};
+
+window.closeOutside=function(e){
+ if(e.target.id==='profileModal')
+   profileModal.style.display='none';
+};
+
+window.logout=function(){
+ location.href='index.html';
+};
+
+});
+</script>
+
+</body>
+</html>
