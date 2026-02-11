@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Work – RESPAWN</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+
+  /* ✅ REQUESTED COLOR ADDED */
+  background:#065f46;
+
+  color:white;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 24px;
+  background:#065f46;
+}
+
+/* HAMBURGER DROPDOWN */
+.hamburger{
+  font-size:22px;
+  cursor:pointer;
+  color:white;
+}
+
+.menuBox{
+  position:absolute;
+  top:70px;
+  right:20px;
+  background:white;
+  width:200px;
+  border-radius:16px;
+  padding:10px;
+
+  display:none;
+  flex-direction:column;
+  gap:10px;
+  z-index:1000;
+}
+
+.menuBox a{
+  color:#065f46;
+  text-decoration:none;
+  padding:10px;
+  font-size:16px;
+}
+
+.showMenu{
+  display:flex;
+}
+
+.backBtn{
+  color:white;
+  text-decoration:none;
+  background:#022c22;
+  padding:6px 12px;
+  border-radius:8px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.board{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-top:10px;
+}
+
+.card{
+  background:rgba(0,0,0,0.55);
+  border-radius:16px;
+  padding:12px;
+}
+
+/* TOAST */
+.toast{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#065f46;
+  border:1px solid #4ade80;
+  padding:12px 16px;
+  border-radius:12px;
+  font-size:14px;
+  opacity:0;
+}
+
+.toast.show{
+  animation: popIn .6s forwards;
+}
+
+@keyframes popIn{
+  from{opacity:0;top:0;}
+  to{opacity:1;top:20px;}
+}
+
+input, select{
+  width:100%;
+  padding:8px;
+  border-radius:10px;
+  border:none;
+  margin-top:4px;
+  box-sizing:border-box;
+}
+
+.btn{
+  margin-top:6px;
+  padding:8px 10px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+}
+
+/* TASK */
+.todo{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#065f46;
+  padding:10px;
+  border-radius:12px;
+  margin-top:8px;
+  border:1px solid #4ade80;
+  transition:.4s;
+}
+
+.glow{
+  box-shadow:0 0 16px #4ade80;
+  transform:scale(1.02);
+}
+
+/* FOCUS COMPASS */
+.stateBox{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+
+.state{
+  background:#022c22;
+  padding:12px;
+  border-radius:12px;
+  text-align:center;
+  cursor:pointer;
+  border:1px solid #4ade80;
+  transition:.3s;
+}
+
+.state.active{
+  background:#065f46;
+  box-shadow:0 0 14px #4ade80;
+}
+
+.suggest{
+  background:#065f46;
+  padding:8px;
+  border-radius:10px;
+  margin-top:6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+  <div>RESPAWN – Work Mode</div>
+
+  <div style="display:flex;gap:10px;align-items:center">
+    <a href="#" class="backBtn">Logout</a>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+  </div>
+</div>
+
+<!-- DROPDOWN MENU -->
+<div class="menuBox" id="menuBox">
+  <a href="stats.html">Home</a>
+  <a href="quests.html">Quests</a>
+  <a href="calendar_boss.html">Calendar & Boss</a>
+  <a href="work.html">Work</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="container">
+
+<!-- ADD TASK -->
+<div class="card">
+<h3>📝 Add Task</h3>
+
+<input id="taskInput" placeholder="Task name..." />
+
+<select id="taskType">
+  <option value="study">Study</option>
+  <option value="work">Work</option>
+  <option value="health">Health</option>
+  <option value="personal">Personal</option>
+</select>
+
+<button class="btn" onclick="addTask()">Add Task</button>
+</div>
+
+<!-- EDIT CARD -->
+<div class="card" id="editCard" style="display:none;margin-top:10px">
+  <h3>✏ Edit Task</h3>
+
+  <input id="editInput" />
+
+  <button class="btn" onclick="saveEdit()">Submit</button>
+  <button class="btn" onclick="closeEdit()">Cancel</button>
+</div>
+
+<!-- BOARD -->
+<div class="board">
+
+<div class="card">
+  <h4>🚧 Ongoing Tasks</h4>
+  <div id="ongoingBox"></div>
+</div>
+
+<div class="card">
+  <h4>✅ Completed Tasks (Today)</h4>
+  <div id="completedBox"></div>
+</div>
+
+</div>
+
+<!-- FOCUS COMPASS -->
+<div class="card" style="margin-top:20px">
+  <h3>🧭 Focus Compass</h3>
+
+  <div class="stateBox">
+    <div class="state" onclick="toggleHelp('low',this)">😵 Low Focus</div>
+    <div class="state" onclick="toggleHelp('fatigue',this)">😴 Fatigued</div>
+    <div class="state" onclick="toggleHelp('over',this)">⚡ Overstimulated</div>
+  </div>
+
+  <div id="helpBox"></div>
+</div>
+
+</div>
+
+<script>
+
+/* MENU */
+function toggleMenu(){
+  menuBox.classList.toggle("showMenu");
+}
+
+let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+let completed = JSON.parse(localStorage.getItem('completed') || '[]');
+
+let editIndex = null;
+
+/* DAILY RESET */
+let today = new Date().toDateString();
+let savedDay = localStorage.getItem("day");
+
+if(savedDay !== today){
+  completed = [];
+  localStorage.setItem("completed", JSON.stringify([]));
+  localStorage.setItem("day", today);
+}
+
+/* TOAST */
+function showToast(msg){
+  toast.innerText = msg;
+  toast.classList.add("show");
+
+  setTimeout(()=>{
+    toast.classList.remove("show");
+  },3000);
+}
+
+/* RENDER */
+function render(){
+
+ ongoingBox.innerHTML='';
+ completedBox.innerHTML='';
+
+ tasks.forEach((t,i)=>{
+  ongoingBox.innerHTML += `
+   <div class="todo" id="task${i}">
+     <div>${t.title}</div>
+
+     <div>
+       <button class="btn" onclick="openEdit(${i})">✏ Edit</button>
+
+       <button class="btn" onclick="finish(${i})">
+         Finished
+       </button>
+     </div>
+   </div>`;
+ });
+
+ completed.forEach(t=>{
+  completedBox.innerHTML += `
+   <div class="todo">
+     <div>${t.title}</div>
+   </div>`;
+ });
+}
+
+/* ADD TASK */
+function addTask(){
+ let title = taskInput.value;
+ if(!title) return;
+
+ tasks.push({ title, createdAt:new Date().toISOString() });
+
+ taskInput.value='';
+ save();
+}
+
+/* EDIT */
+function openEdit(i){
+ editIndex = i;
+ editInput.value = tasks[i].title;
+ editCard.style.display = "block";
+}
+
+function saveEdit(){
+ let val = editInput.value.trim();
+ if(!val) return;
+
+ tasks[editIndex].title = val;
+ editIndex = null;
+ editCard.style.display = "none";
+
+ save();
+}
+
+function closeEdit(){
+ editIndex = null;
+ editCard.style.display = "none";
+}
+
+/* FINISH */
+function finish(i){
+
+ let box = document.getElementById("task"+i);
+ box.classList.add("glow");
+
+ setTimeout(()=>{
+
+   let t = tasks[i];
+   completed.push(t);
+   tasks.splice(i,1);
+
+   save();
+
+   if(completed.length <= 3){
+     showToast("+5 XP Gained 🎉");
+   }
+
+ },1200);
+}
+
+/* COMPASS – ONLY SUGGESTIONS */
+function toggleHelp(type,btn){
+
+ document.querySelectorAll(".state")
+   .forEach(b=>b.classList.remove("active"));
+
+ btn.classList.add("active");
+
+ let generated = [];
+
+ if(type=="low"){
+  generated = [
+    "⏱ Do one 25-min focus sprint",
+    "🪨 Start the easiest task first",
+    "📚 Review notes for 10 min",
+    "📵 Keep phone away for 15 min"
+  ];
+ }
+
+ if(type=="fatigue"){
+  generated = [
+    "💧 Drink water and breathe",
+    "🚶 Take a 5 min walk",
+    "🧘 Stretch neck & shoulders",
+    "🍎 Eat a small healthy snack"
+  ];
+ }
+
+ if(type=="over"){
+  generated = [
+    "📝 Write brain dump list",
+    "🎯 Pick ONLY one priority",
+    "🔕 Sit in silence 3 min",
+    "📱 Dim screen & close tabs"
+  ];
+ }
+
+ helpBox.innerHTML = generated
+   .map(t=>`<div class='suggest'>${t}</div>`)
+   .join("");
+}
+
+function save(){
+ localStorage.setItem('tasks',JSON.stringify(tasks));
+ localStorage.setItem('completed',JSON.stringify(completed));
+ render();
+}
+
+render();
+</script>
+
+</body>
+</html>

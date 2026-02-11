@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choose Avatar - RESPAWN</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:url('../assets/images/bg.png') no-repeat center center fixed;
+  background-size:cover;
+  color:white;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:-1;
+}
+
+/* BACK BUTTON */
+.back{
+  position:fixed;
+  top:12px;
+  left:12px;
+  background:#065f46;
+  color:white;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* CARD */
+.container{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:16px;
+}
+
+.card{
+  background:rgba(0,0,0,0.68);
+  padding:20px;
+  border-radius:14px;
+  width:520px;
+
+  /* 👉 adjust to textbox size */
+  height:auto;
+  max-width:100%;
+  position:relative;
+  box-sizing:border-box;
+}
+
+/* TOAST */
+.toast{
+  position:absolute;
+  top:-30px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#065f46;
+  border:1px solid #4ade80;
+  padding:10px 14px;
+  border-radius:10px;
+  font-size:13px;
+  opacity:0;
+}
+
+.toast.show{
+  animation: toastIn 0.5s ease forwards;
+}
+
+@keyframes toastIn{
+  from{opacity:0;top:-40px;}
+  to{opacity:1;top:-10px;}
+}
+
+/* GENDER */
+.gender-box{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.gender{
+  flex:1;
+  text-align:center;
+  padding:10px;
+  border:2px solid #4ade80;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.gender.selected{
+  background:#065f46;
+}
+
+/* ===== AVATAR IN ONE LINE ONLY ===== */
+.grid{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+  justify-content:center;     /* center align */
+}
+
+.avatar{
+  width:110px;                /* fixed width */
+  border:2px solid #4ade80;
+  border-radius:10px;
+  padding:4px;
+  text-align:center;
+  cursor:pointer;
+  background:#022c22;
+}
+
+.avatar img{
+  width:100%;
+  height:110px;
+  object-fit:contain;
+}
+
+.avatar.selected{
+  border:2px solid white;
+  box-shadow:0 0 14px white;
+  background:#065f46;
+}
+
+/* USERNAME TEXTBOX SIZE */
+.input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:2px solid #4ade80;
+  border-radius:8px;
+  background:#022c22;
+  color:white;
+  box-sizing:border-box;
+}
+
+/* BUTTON */
+.btn{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background:white;
+  color:#065f46;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="back" onclick="location.href='index.html'">← Back</div>
+
+<div class="container">
+<div class="card">
+
+<!-- TOAST -->
+<div class="toast" id="toastMsg"></div>
+
+<h2>Step 1 – Select Gender</h2>
+
+<div class="gender-box">
+  <div class="gender" onclick="chooseGender('male',this)">Male</div>
+  <div class="gender" onclick="chooseGender('female',this)">Female</div>
+</div>
+
+<div id="avatarSection" style="display:none;">
+
+<h2>Step 2 – Choose Your Hero</h2>
+
+<!-- AVATAR ONE LINE -->
+<div class="grid" id="avatarGrid"></div>
+
+<!-- USERNAME -->
+<input class="input" id="username"
+ placeholder="Enter avatar name / username" />
+
+<button class="btn" onclick="save()">Continue</button>
+</div>
+
+</div>
+</div>
+
+<script>
+let selectedGender=null;
+
+const maleAvatars=['m1.png','m2.png','m3.png','m4.png'];
+const femaleAvatars=['f1.png','f2.png','f3.png','f4.png'];
+
+/* TOAST */
+function showToast(msg){
+  toastMsg.innerText = msg;
+  toastMsg.classList.add("show");
+
+  setTimeout(()=>{
+    toastMsg.classList.remove("show");
+  },10000);
+}
+
+function chooseGender(g,el){
+ selectedGender=g;
+
+ document.querySelectorAll('.gender')
+   .forEach(x=>x.classList.remove('selected'));
+
+ el.classList.add('selected');
+
+ const list = g==='male' ? maleAvatars : femaleAvatars;
+ const grid = document.getElementById('avatarGrid');
+
+ grid.innerHTML='';
+
+ list.forEach(file=>{
+  grid.innerHTML += `
+   <div class="avatar" onclick="select(this)" data-id="${file}">
+     <img src="../assets/images/${file}">
+   </div>`;
+ });
+
+ document.getElementById('avatarSection').style.display='block';
+}
+
+function select(el){
+ document.querySelectorAll('.avatar')
+   .forEach(a=>a.classList.remove('selected'));
+
+ el.classList.add('selected');
+}
+
+function save(){
+
+ if(!selectedGender){
+   showToast("⚠ Please select gender first");
+   return;
+ }
+
+ const chosen = document.querySelector('.avatar.selected');
+ const name   = document.getElementById('username').value.trim();
+
+ if(!chosen){
+   showToast("⚠ Please select an avatar");
+   return;
+ }
+
+ if(!name){
+   showToast("⚠ Please enter username");
+   return;
+ }
+
+ const data={
+   gender:selectedGender,
+   avatar:chosen.dataset.id,
+   username:name
+ };
+
+ localStorage.setItem('profile',JSON.stringify(data));
+
+ location.href='input.html';
+}
+</script>
+
+</body>
+</html>
