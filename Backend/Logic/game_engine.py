@@ -119,7 +119,7 @@ def calculate_stats(daily_input):
 # ---------------------------------
 # TEST RUN (TEMPORARY) for calculating stats
 # ---------------------------------
-if _name_ == "_main_":
+if __name__ == "__main__":
     test_input = {
         "sleep_hours": 6,
         "screen_time": 8,
@@ -133,7 +133,7 @@ if _name_ == "_main_":
 """
 
 
-#--------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 
 
 
@@ -187,7 +187,7 @@ def determine_effects(stats):
 # TEST RUN (TEMPORARY) for buffs and debuffs
 # ---------------------------------
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     sample_input = {
         "sleep_hours": 6,
         "screen_time": 8,
@@ -204,7 +204,7 @@ if _name_ == "_main_":
 """
 
 
-#--------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 
 
 
@@ -262,7 +262,7 @@ def calculate_level_from_xp(total_xp):
 # ---------------------------------
 # TEST RUN (TEMPORARY): XP & LEVEL
 # ---------------------------------
-if _name_ == "_main_":
+if __name__ == "__main__":
     test_xp_values = [0, 50, 100, 180, 240, 300, 420, 640]
 
     for xp in test_xp_values:
@@ -273,7 +273,6 @@ if _name_ == "_main_":
 
 
 #-------------------------------------------------------------------------------------------------
-
 
 
 
@@ -336,7 +335,7 @@ def determine_character_state(stats, effects):
 # ---------------------------------
 # TEST RUN: CHARACTER & THEME
 # ---------------------------------
-if _name_ == "_main_":
+if __name__ == "__main__":
 
     # Sample stats (already calculated earlier in pipeline)
     test_stats = {
@@ -362,6 +361,7 @@ if _name_ == "_main_":
         print("Character State:", result["character_state"])
         print("Theme:", result["theme"])
 """
+
 
 #-------------------------------------------------------------------------------------------------
 
@@ -558,7 +558,7 @@ def check_quest_completion(quests, daily_input, manual_completions=None):
 # ---------------------------------
 # TEST RUN: QUEST SYSTEM
 # ---------------------------------
-if _name_ == "_main_":
+if __name__ == "__main__":
     test_input = {
         "sleep_hours": 5,
         "screen_time": 6,
@@ -698,7 +698,7 @@ def check_calendar_event(event):
 # ---------------------------------
 # TEST RUN: BOSS & CALENDAR
 # ---------------------------------
-if _name_ == "_main_":
+if __name__ == "__main__":
     prev_stats = {"energy": 40, "focus": 30, "resilience": 45}
     curr_stats = {"energy": 50, "focus": 25, "resilience": 45}
 
@@ -802,7 +802,7 @@ def process_day(
 # ---------------------------------
 # TEST RUN: FULL DAILY CYCLE
 # ---------------------------------
-if _name_ == "_main_":
+if __name__ == "__main__":
     prev_state = {
         "stats": {"health": 45, "energy": 40, "focus": 30, "resilience": 45},
         "xp": {"total_xp": 100},
