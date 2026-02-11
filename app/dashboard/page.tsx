@@ -4,29 +4,17 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { AppNav } from "@/components/nav"
 import { StatBar } from "@/components/stat-bar"
-import { getProfile, getDailyInputs, getXpData, setXpData, setStats as storeSetStats } from "@/lib/store"
+import { getProfile, getDailyInputs, getXpData, setStats as storeSetStats } from "@/lib/store"
 import {
   calculateStats,
   determineEffects,
   determineCharacterState,
-  calculateLevelFromXp,
   type Stats,
   type Effect,
   type CharacterState,
 } from "@/lib/game-engine"
 import { cn } from "@/lib/utils"
-import { User, Settings } from "lucide-react"
-
-const AVATAR_COLORS: Record<string, string> = {
-  m1: "bg-emerald-700",
-  m2: "bg-teal-700",
-  m3: "bg-cyan-700",
-  m4: "bg-green-700",
-  f1: "bg-emerald-600",
-  f2: "bg-teal-600",
-  f3: "bg-cyan-600",
-  f4: "bg-green-600",
-}
+import Image from "next/image"
 
 const THEME_BG: Record<string, string> = {
   rain: "from-slate-900 to-slate-700",
@@ -106,17 +94,11 @@ export default function DashboardPage() {
 
   const buffs = effects.filter((e) => e in BUFF_LABELS)
   const debuffs = effects.filter((e) => e in DEBUFF_LABELS)
-  const xpPercent =
-    xpData.xp_for_next_level > 0
-      ? Math.round(
-          (xpData.xp_progress_in_level /
-            (xpData.xp_for_next_level - (xpData.xp_for_next_level - xpData.xp_progress_in_level - (xpData.total_xp - xpData.xp_progress_in_level)) || 100)) *
-            100
-        )
-      : 0
 
-  const xpWidth = xpData.xp_for_next_level > 0
-    ? Math.min(100, Math.round((xpData.xp_progress_in_level / (xpData.xp_for_next_level - xpData.total_xp + xpData.xp_progress_in_level || 100)) * 100))
+  // XP needed for current level bracket
+  const xpNeededForCurrentLevel = xpData.xp_for_next_level - (xpData.total_xp - xpData.xp_progress_in_level)
+  const xpWidth = xpNeededForCurrentLevel > 0
+    ? Math.min(100, Math.round((xpData.xp_progress_in_level / xpNeededForCurrentLevel) * 100))
     : 0
 
   return (
@@ -128,14 +110,13 @@ export default function DashboardPage() {
         onClick={() => setProfileOpen(!profileOpen)}
         className="flex items-center gap-3 px-4 py-3"
       >
-        <div
-          className={cn(
-            "flex h-14 w-14 items-center justify-center rounded-full border-3 border-accent text-lg font-bold text-foreground",
-            AVATAR_COLORS[profileData.avatar] || "bg-primary"
-          )}
-        >
-          {profileData.avatar?.toUpperCase().slice(0, 2)}
-        </div>
+        <Image
+          src={`/images/${profileData.avatar}-normal.png`}
+          alt={profileData.username}
+          width={56}
+          height={56}
+          className="h-14 w-14 rounded-full border-3 border-accent bg-secondary object-contain p-0.5"
+        />
         <div>
           <p className="font-semibold text-foreground">{profileData.username}</p>
           <div className="mt-1 rounded-2xl border-2 border-accent bg-primary px-3 py-1">
@@ -157,14 +138,13 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-4xl px-4 pb-10">
         {/* Hero avatar card */}
         <div className="rounded-2xl bg-card p-6 text-center">
-          <div
-            className={cn(
-              "mx-auto flex h-40 w-40 items-center justify-center rounded-full text-4xl font-bold text-foreground",
-              AVATAR_COLORS[profileData.avatar] || "bg-primary"
-            )}
-          >
-            {profileData.avatar?.toUpperCase()}
-          </div>
+          <Image
+            src={`/images/${profileData.avatar}-${character.character_state}.png`}
+            alt={`${profileData.username} - ${character.character_state}`}
+            width={170}
+            height={170}
+            className="mx-auto h-40 w-40 rounded-full bg-secondary object-contain p-1"
+          />
           <p className="mt-3 text-lg font-medium capitalize text-card-foreground">
             Mood: {character.character_state}
           </p>
@@ -232,14 +212,13 @@ export default function DashboardPage() {
               Player Profile
             </h3>
             <div className="flex justify-center">
-              <div
-                className={cn(
-                  "flex h-20 w-20 items-center justify-center rounded-full text-2xl font-bold text-foreground",
-                  AVATAR_COLORS[profileData.avatar] || "bg-secondary"
-                )}
-              >
-                {profileData.avatar?.toUpperCase().slice(0, 2)}
-              </div>
+              <Image
+                src={`/images/${profileData.avatar}-normal.png`}
+                alt={profileData.username}
+                width={80}
+                height={80}
+                className="h-20 w-20 rounded-full bg-secondary object-contain p-1"
+              />
             </div>
             <div className="mt-4 space-y-2 text-primary-foreground">
               <p>

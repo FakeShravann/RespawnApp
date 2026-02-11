@@ -7,20 +7,20 @@ import { setProfile } from "@/lib/store"
 import { cn } from "@/lib/utils"
 import { ArrowLeft } from "lucide-react"
 
+import Image from "next/image"
+
 const MALE_AVATARS = ["m1", "m2", "m3", "m4"]
 const FEMALE_AVATARS = ["f1", "f2", "f3", "f4"]
 
-/* Since the original project uses local image files that don't exist in our Next.js build,
-   we'll use colored SVG placeholders representing each avatar */
-const AVATAR_COLORS: Record<string, { bg: string; label: string }> = {
-  m1: { bg: "bg-emerald-700", label: "Warrior" },
-  m2: { bg: "bg-teal-700", label: "Mage" },
-  m3: { bg: "bg-cyan-700", label: "Rogue" },
-  m4: { bg: "bg-green-700", label: "Knight" },
-  f1: { bg: "bg-emerald-600", label: "Huntress" },
-  f2: { bg: "bg-teal-600", label: "Sorceress" },
-  f3: { bg: "bg-cyan-600", label: "Ranger" },
-  f4: { bg: "bg-green-600", label: "Paladin" },
+const AVATAR_LABELS: Record<string, string> = {
+  m1: "Warrior",
+  m2: "Mage",
+  m3: "Rogue",
+  m4: "Knight",
+  f1: "Huntress",
+  f2: "Sorceress",
+  f3: "Ranger",
+  f4: "Paladin",
 }
 
 export default function AvatarPage() {
@@ -126,16 +126,15 @@ export default function AvatarPage() {
                       : "border-border bg-secondary"
                   )}
                 >
-                  <div
-                    className={cn(
-                      "flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-foreground",
-                      AVATAR_COLORS[av].bg
-                    )}
-                  >
-                    {av.toUpperCase()}
-                  </div>
+                  <Image
+                    src={`/images/${av}.png`}
+                    alt={AVATAR_LABELS[av]}
+                    width={64}
+                    height={64}
+                    className="h-16 w-16 rounded-full object-contain"
+                  />
                   <span className="text-xs text-card-foreground">
-                    {AVATAR_COLORS[av].label}
+                    {AVATAR_LABELS[av]}
                   </span>
                 </button>
               ))}

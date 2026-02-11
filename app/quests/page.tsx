@@ -8,7 +8,6 @@ import {
   setManualCompletions,
   getXpData,
   setXpData,
-  getStats,
 } from "@/lib/store"
 import {
   calculateStats,
@@ -69,10 +68,8 @@ export default function QuestsPage() {
     setActiveQuests(quests.filter((q) => !completedIds.has(q.id)))
     setCompletedQuests(result.completed_quests)
 
-    // Award XP
+    // Award XP for the completed quest
     const xp = getXpData()
-    const newXp = calculateLevelFromXp(xp.total_xp + (result.xp_gained - (xp.total_xp - xp.xp_progress_in_level)))
-    // Simple: add the quest XP
     const quest = quests.find((q) => q.id === questId)
     if (quest) {
       const updatedXp = calculateLevelFromXp(xp.total_xp + quest.xp)
