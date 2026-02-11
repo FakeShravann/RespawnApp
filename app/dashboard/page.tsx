@@ -59,21 +59,27 @@ export default function DashboardPage() {
   useEffect(() => {
     setMounted(true)
     const profile = getProfile()
+    console.log("[v0] getProfile() returned:", profile)
     if (!profile) {
+      console.log("[v0] No profile found, redirecting to /avatar")
       router.push("/avatar")
       return
     }
     setProfileData(profile)
 
     const input = getDailyInputs()
+    console.log("[v0] getDailyInputs() returned:", input)
     if (!input) {
       router.push("/daily-input")
       return
     }
 
     const computed = calculateStats(input)
+    console.log("[v0] calculateStats result:", computed)
     const eff = determineEffects(computed)
+    console.log("[v0] determineEffects result:", eff)
     const charState = determineCharacterState(computed, eff)
+    console.log("[v0] characterState:", charState)
 
     setStats(computed)
     setEffects(eff)
